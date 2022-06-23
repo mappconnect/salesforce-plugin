@@ -1,0 +1,137 @@
+<apex:component controller="SettingsController" allowDML="true">
+    <apex:form>
+        <apex:pageBlock title="Mapp Connect - settings" id="settings">
+            <apex:pageMessages></apex:pageMessages>
+            <apex:pageBlockSection title="Connection Settings" columns="1">
+                <apex:pageBlockSectionItem>
+                    <apex:outputPanel>
+                        <div>
+                            <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                <apex:outputLabel value="API URL"></apex:outputLabel>
+                            </div>
+                            <div style="display: inline-block; width:10px;" draggable="false"></div>
+                            <div style="display: inline-block;" align="left" draggable="false">
+                                <apex:inputText label="API URL" value="{! integrationSettings.mappmct__api_url__c }" style="width:400px" />
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:outputPanel>
+                        <div>
+                            <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                <apex:outputLabel value="Integration ID"></apex:outputLabel>
+                            </div>
+                            <div style="display: inline-block; width:10px;" draggable="false"></div>
+                            <div style="display: inline-block;" align="left" draggable="false">
+                                <apex:inputText label="Integration ID" value="{! integrationSettings.mappmct__integration_id__c }" style="width:400px" />
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:outputPanel>
+                        <div>
+                            <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                <apex:outputLabel value="API Secret"></apex:outputLabel>
+                            </div>
+                            <div style="display: inline-block; width:10px;" draggable="false"></div>
+                            <div style="display: inline-block;" align="left" draggable="false">
+                                <apex:inputText label="API Secret" value="{! integrationSettings.mappmct__secret__c }" style="width:250px" />
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:outputPanel>
+                        <div>
+                            <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                <apex:outputLabel value="Lead Group"></apex:outputLabel>
+                            </div>
+                            <div style="display: inline-block; width:10px;" draggable="false"></div>
+                            <div style="display: inline-block;" align="left" draggable="false">
+                                <apex:selectList label="Lead Group" value="{! integrationSettings.mappmct__lead_group__c }" multiselect="false" size="1"
+                                    rendered="{!IF(integrationSettings.mappmct__connection_status__c == 'CONNECTED','true','false')}">
+                                    <apex:selectOptions value="{!groups}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:outputPanel>
+                        <div>
+                            <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                <apex:outputLabel value="Connection Status"></apex:outputLabel>
+                            </div>
+                            <div style="display: inline-block; width:10px;" draggable="false"></div>
+                            <div style="display: inline-block;" align="left" draggable="false">
+                                <apex:outputField label="Connection Status" value="{! integrationSettings.mappmct__connection_status__c }" style="width:250px"
+                                />
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Lead fields configuration (non-default ones, remember to add parameters source and name in integration mapping settings)"
+                columns="1">
+                <apex:variable value="{!0}" var="leadFieldIndex" />
+                <apex:repeat value="{!leadFieldsList}" var="lp" id="ldAdd">
+                    <apex:pageBlockSectionItem>
+                        <apex:outputPanel>
+                            <div>
+                                <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                    <apex:outputLabel value="Lead Field"></apex:outputLabel>
+                                </div>
+                                <div style="display: inline-block; width:10px;" draggable="false"></div>
+                                <div style="display: inline-block;" align="left" draggable="false">
+                                    <apex:selectList value="{!lp.name}" multiselect="false" size="1" style="width:150px">
+                                        <apex:selectOptions value="{!leadFields}" />
+                                    </apex:selectList>&nbsp;&nbsp;
+                                    <apex:commandLink value="Delete" action="{!deleteLeadField}">
+                                        <apex:param value="{!leadFieldIndex}" assignTo="{!leadFieldCounter}" name="cpc" />
+                                    </apex:commandLink>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:variable var="leadFieldIndex" value="{!leadFieldIndex + 1}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Contact fields configuration (non-default ones, remember to add parameters source and name in integration mapping settings)"
+                columns="1">
+                <apex:variable value="{!0}" var="customFieldIndex" />
+                <apex:repeat value="{!contactFieldsList}" var="cp" id="ldAdd">
+                    <apex:pageBlockSectionItem>
+                        <apex:outputPanel>
+                            <div>
+                                <div style="display: inline-block; width:300px;" align="right" draggable="false">
+                                    <apex:outputLabel value="Contact Field"></apex:outputLabel>
+                                </div>
+                                <div style="display: inline-block; width:10px;" draggable="false"></div>
+                                <div style="display: inline-block;" align="left" draggable="false">
+                                    <apex:selectList value="{!cp.name}" multiselect="false" size="1" style="width:150px">
+                                        <apex:selectOptions value="{!contactFields}" />
+                                    </apex:selectList>&nbsp;&nbsp;
+                                    <apex:commandLink value="Delete" action="{!deleteContactField}">
+                                        <apex:param value="{!customFieldIndex}" assignTo="{!contactFieldCounter}" name="cpc" />
+                                    </apex:commandLink>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:variable var="customFieldIndex" value="{!customFieldIndex + 1}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1">
+                <apex:pageBlockSectionItem>
+                    <apex:outputPanel>
+                        <apex:commandButton value="Add Lead Field" action="{!addLeadField}" />
+                        <apex:commandButton value="Add Contact Field" action="{!addContactField}" />
+                        <apex:commandButton action="{!save}" value="Save" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:component>
